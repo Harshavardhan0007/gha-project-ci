@@ -1,0 +1,33 @@
+name: build the ci pipeline 
+
+on: 
+  push:
+    branches: 
+      - main
+  pull_request:
+    branches:
+      - main 
+
+jobs:
+  ci-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: sets up Python
+        uses: actions/python@v4
+        with:
+          cache: pip
+      - name: pip install requirements.txt
+        run: pip install -r requirements.txt
+      - name: python complie all 
+        run: python -m compileall pixelpost
+      - name: python pytest
+        run: pytest --junitxml=test-resutls.xml
+      - name: upload artifacts
+        uses: actions/upload-artifacts@v4
+        if: always()
+        with:
+          name: test-results
+          path: test-results.txt
+          retension-days: 5
+
